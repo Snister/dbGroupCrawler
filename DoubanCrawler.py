@@ -41,7 +41,7 @@ class DoubanCrawler():
         return requests.get(url = self.__make_ajax_url(maxNo)).content
         
     def __save_pages(self, htmlPage):
-        """ 刷新页面 """
+        """ 保存帖子地址 """
         prog = re.compile(r'href="(\S+\d\/)"\s?title')
         self.pageUrls.extend(prog.findall(htmlPage))
         
