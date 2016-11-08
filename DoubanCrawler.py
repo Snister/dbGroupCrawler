@@ -18,11 +18,15 @@ import os
 import os.path
 
 class DoubanCrawler():
-    """ 抓取豆瓣小组的图片 """
+    """ 抓取豆瓣小组的图片
+        抓取链接为讨论分页页面
+        load_pages()传递参数为抓取页数   
+    
+    """
 
     def __init__(self):
         """ 在当前文件夹下新建images文件夹存放抓取的图片 """
-        self.homeUrl = "https://www.douban.com/group/lvxing/discussion"
+        self.homeUrl = "https://www.douban.com/group/haixiuzu/discussion"
         self.pageUrls = []
         self.images = []
         if not os.path.exists('./db_images'):
@@ -67,9 +71,13 @@ class DoubanCrawler():
             return None
         for i in range(0,len(imgs)):
             info = {}
-            info['id'] = re.search('p\d{8}.*',imgs[i]).group()
-            info['url'] = imgs[i]
-            self.images.append(info)
+            try:
+                info['id'] = re.search('p\d{8}.*',imgs[i]).group()
+                info['url'] = imgs[i]
+                self.images.append(info)
+            except :
+                print 'img error'
+
             #print self.images[i]
     def __save_image(self, imageName, content):
         """ 保存图片 """
@@ -101,6 +109,6 @@ class DoubanCrawler():
 
 if __name__ == '__main__':
     hc = DoubanCrawler()
-    hc.load_pages(1)
+    hc.load_pages(3)
     hc.get_image_info()
     hc.down_images()
