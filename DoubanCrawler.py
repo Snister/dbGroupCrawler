@@ -18,15 +18,19 @@ import os
 import os.path
 
 class DoubanCrawler():
-    """ 抓取豆瓣小组的图片 """
+    """ 抓取豆瓣小组的图片
+        抓取链接为讨论分页页面
+        load_pages()传递参数为抓取页数   
+    
+    """
 
     def __init__(self):
         """ 在当前文件夹下新建images文件夹存放抓取的图片 """
-        self.homeUrl = "https://www.douban.com/group/lvxing/discussion"
+        self.homeUrl = "https://www.douban.com/group/haixiuzu/discussion"
         self.pageUrls = []
         self.images = []
-        if not os.path.exists('./db_images'):
-            os.mkdir('./db_images')
+        if not os.path.exists('./db_hxz_images'):
+            os.mkdir('./db_hxz_images')
 
     def __load_singlePage(self,pageUrl):
         """ 加载页面 """
@@ -47,14 +51,8 @@ class DoubanCrawler():
         
     def load_pages(self,num=5):
         """ 从html页面中提取帖子的信息 """
-        htmlPage = requests.get(self.homeUrl).content
-        prog = re.compile(r'href="(\S+\d\/)"\s?title')
-        self.pageUrls = prog.findall(htmlPage)
-        #print "共取得{}条记录".format(len(self.pageUrls))
-        #for i in range(len(self.pageUrls)):
-         #   print self.pageUrls[i]
-        for i in range(1,num):
-            print "加载第{}页".format(i)
+        for i in range(0,num):
+            print "加载第{}页".format(i+1)
             self.__save_pages(self.__load_more(i*25))
         return self.images
             
@@ -67,9 +65,13 @@ class DoubanCrawler():
             return None
         for i in range(0,len(imgs)):
             info = {}
-            info['id'] = re.search('p\d{8}.*',imgs[i]).group()
-            info['url'] = imgs[i]
-            self.images.append(info)
+            try:
+                info['id'] = re.search('p\d{8}.*',imgs[i]).group()
+                info['url'] = imgs[i]
+                self.images.append(info)
+            except :
+                print 'img error'
+
             #print self.images[i]
     def __save_image(self, imageName, content):
         """ 保存图片 """
@@ -95,7 +97,7 @@ class DoubanCrawler():
                 req = requests.get(image["url"])
             except :
                 print 'error'
-            imageName = os.path.join("./db_images", image["id"])
+            imageName = os.path.join("./db_hxz_images", image["id"])
             self.__save_image(imageName, req.content)
 
 
